@@ -12,18 +12,18 @@ entity up_down_counter is
 end entity up_down_counter;
 
 architecture rtl of up_down_counter is
-    signal count : unsigned(31 downto 0) := x"2FAF080"; -- модуль счета по умолчанию 50 000 000 
+    signal count : unsigned(31 downto 0) := x"00000032"; -- модуль счета по умолчанию 50 000 000 
 begin
-    p1 : process (clk, rs, dir) begin
+    p1 : process (clk, rs, up, down) begin
         if (rs = '1') then
-            count <= (others => x"2FAF080");
+            count <= x"00000032";
         else
             if rising_edge(clk) then
                 if (up = '1') then
-                    count <= count + 1000000;
+                    count <= count + 10;
                 end if;
                 if (down = '1') then
-                    count <= count - 1000000;
+                    count <= count - 10;
                 end if;
             end if;
         end if;

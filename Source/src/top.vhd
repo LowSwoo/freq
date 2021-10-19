@@ -21,33 +21,27 @@ architecture rtl of top is
   signal uv0_out : std_logic;
   signal uv1_out : std_logic;
   signal div_out : std_logic_vector(31 downto 0);
-  signal cout : std_logic;
 
 begin
   rs <= KEY0 and KEY1;
-
   -- univibrators block
   uv0 : entity work.univibrator
     port map(
-        clk => clk,
-        rs => rs,
-        f => KEY0,
-        sfr => uv0_out
+      clk => clk,
+      rs => rs,
+      f => KEY0,
+      sfr => uv0_out
     );
-
-    uv1 : entity work.univibrator
+  uv1 : entity work.univibrator
     port map(
-        clk => clk,
-        rs => rs,
-        f => KEY1,
-        sfr => uv1_out
+      clk => clk,
+      rs => rs,
+      f => KEY1,
+      sfr => uv1_out
     );
-    -- end univibrators block
-
-
-
-  -- Счетчи вверх/вниз
-  couter0 : entity work.up_counter
+  -- end univibrators block
+  -- Счетчик вверх/вниз
+  couter0 : entity work.up_down_counter
     port map(
       clk => clk,
       rs => rs,
@@ -55,23 +49,22 @@ begin
       down => uv1_out,
       cout => div_out
     );
+  ---------------------------------------
 
-  ----------------------------------------
   -- делитель	  
-  c_d : entity work.clk_divider
-
-    generic map(DIVIDER);
+  clk_divider : entity work.clk_divider
   port map(
     rs => rs,
     clk => clk,
-    div_clk => div_clk
+    divider => div_out,
+    div_clk => LED
   );
   -- Индикация                                                                  --
-  mux : process (KEY0) begin
-    if (KEY0 = '1') then
-      LED <= std_logic_vector(count100mhz(11 downto 4));
-    else
-      LED <= std_logic_vector(countpll(11 downto 4));
-    end if;
-  end process;
+  -- mux : process (KEY0) begin
+  --   if (KEY0 = '1') then
+  --     LED <= std_logic_vector(count100mhz(11 downto 4));
+  --   else
+  --     LED <= std_logic_vector(countpll(11 downto 4));
+  --   end if;
+  -- end process;
 end architecture;
