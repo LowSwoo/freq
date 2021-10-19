@@ -18,45 +18,42 @@ architecture rtl of top is
 
   -- signal clk_int      : std_logic;
   signal rs : std_logic;
-  signal a : std_logic;
-  signal b : std_logic;
+  signal uv0_out : std_logic;
+  signal uv1_out : std_logic;
+  signal div_out : std_logic_vector(31 downto 0);
   signal cout : std_logic;
 
 begin
   rs <= KEY0 and KEY1;
 
-  --Одновибратор KEY0
-  one_p0 : process (rs, KEY0)
-  begin
-    if rs = '1' then
-      b <= '1';
-      sfr0 <= '0';
-    elsif rising_edge(KEY0) then
-      b <= not KEY0;
-      sfr0 <= b or KEY0;
-    end if;
-  end process;
+  -- univibrators block
+  uv0 : entity work.univibrator
+    port map(
+        clk => clk,
+        rs => rs,
+        f => KEY0,
+        sfr => uv0_out
+    );
 
-  --Одновибратор KEY1
-  one_p1 : process (rs, KEY1)
-  begin
-    if rs = '1' then
-      a <= '1';
-      sfr1 <= '0';
-    elsif rising_edge(KEY1) then
-      a <= not KEY1;
-      sfr1 <= a or KEY1;
-    end if;
-  end process;
+    uv1 : entity work.univibrator
+    port map(
+        clk => clk,
+        rs => rs,
+        f => KEY1,
+        sfr => uv1_out
+    );
+    -- end univibrators block
+
+
 
   -- Счетчи вверх/вниз
   couter0 : entity work.up_counter
     port map(
       clk => clk,
       rs => rs,
-      load => sfr0,
-      data => sfr1,
-      cout => cout
+      up => uv0_out,
+      down => uv1_out,
+      cout => div_out
     );
 
   ----------------------------------------
