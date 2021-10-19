@@ -42,7 +42,7 @@ begin
         counter <= counter + 1;
       end if;
 
-      if counter >= natural(ceil(real(to_integer(unsigned(divider)/2)))) then
+      if counter >= to_integer(unsigned(divider)/2) then
         div_clk <= '1';
       else
         div_clk <= '0';
